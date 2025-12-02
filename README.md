@@ -1,31 +1,5 @@
-# Proyecto Final SIS313
-#  MediaWiki Universitaria 
+# Proyecto Final SIS313: MediaWiki Universitario
 
-![Ubuntu](https://img.shields.io/badge/OS-Ubuntu_Server_24.04-orange?style=flat&logo=ubuntu)
-![Nginx](https://img.shields.io/badge/Web_Server-Nginx-green?style=flat&logo=nginx)
-![MariaDB](https://img.shields.io/badge/Database-MariaDB-blue?style=flat&logo=mariadb)
-![MediaWiki](https://img.shields.io/badge/App-MediaWiki_1.42-yellow?style=flat&logo=mediawiki)
-![Redis](https://img.shields.io/badge/Cache-Redis-red?style=flat&logo=redis)
-![Prometheus](https://img.shields.io/badge/Monitoring-Prometheus-orange?style=flat&logo=prometheus)
-
-Asignatura: SIS313: Infraestructura, Plataformas Tecnológicas y Redes
-Semestre: 2/2025
-Docente: Ing. Marcelo Quispe Ortega
-
-👥 Miembros del Equipo ([Grupo-07])
-Integrantes y Rol
-[Castro Siñanis Jose Luis]	Arquitecto de Infraestructura y Seguridad	[]
-[Villena Mamani Alvaro Fabian]	Ingeniero de Automatización y Monitoreo	[@AlvaroFab28]
-[Villca Araca Jhesica]	Administrador de Sistemas y Base de Datos	[@cero0202]
-
-
-# 🚀 SIS313: Infraestructura High Availability - MediaWiki Cluster
-
-![Status](https://img.shields.io/badge/STATUS-TERMINADO-green?style=for-the-badge)
-![Security](https://img.shields.io/badge/SEGURIDAD-PARANOICA-red?style=for-the-badge)
-![Availability](https://img.shields.io/badge/UPTIME-99.9%25-blue?style=for-the-badge)
-
-> **"Lo que no te mata, te hace más resiliente (o te hace saltar el Failover)."**
 
 Este repositorio contiene la documentación, scripts y configuraciones para el **Proyecto Final de la asignatura SIS313**. Implementamos una infraestructura de **Alta Disponibilidad** para MediaWiki, diseñada para aguantar caídas de servidores, picos de tráfico y miradas feas del docente.
 
@@ -34,9 +8,9 @@ Este repositorio contiene la documentación, scripts y configuraciones para el *
 ## 👥 El Dream Team
 | Rol | Miembro | GitHub |
 | :--- | :--- | :--- |
-| **Arquitecto de Infraestructura y Seguridad** | [Villena Mamani Alvaro Fabian] | [@AlvaroFab28] |
-| **SysAdmin & Hardening** | [Castro Siñanis Jose Luis] | [@tu_usuario] |
-| **Administrador de Sistemas y Base de Datos** | [Villca Araca Jhesica] | [@cero0202] |
+| **Proxy1, Proxy2, DNS, Monitoreo Grafana** | [Villena Mamani Alvaro Fabian] | [@AlvaroFab28] |
+| **App1, App2, NFS** | [Castro Siñanis Jose Luis] | [@tu_usuario] |
+| **Redis, Base de Datos** | [Villca Araca Jhesica] | [@cero0202] |
 
 ---
 
