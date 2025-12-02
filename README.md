@@ -1,6 +1,6 @@
 # Proyecto Final SIS313
 #  MediaWiki Universitaria 
-Despliegue de un Cluster Web Escalable, Resiliente y Monitoreado.
+
 ![Ubuntu](https://img.shields.io/badge/OS-Ubuntu_Server_24.04-orange?style=flat&logo=ubuntu)
 ![Nginx](https://img.shields.io/badge/Web_Server-Nginx-green?style=flat&logo=nginx)
 ![MariaDB](https://img.shields.io/badge/Database-MariaDB-blue?style=flat&logo=mariadb)
@@ -18,97 +18,118 @@ Integrantes y Rol
 [Villena Mamani Alvaro Fabian]	Ingeniero de Automatización y Monitoreo	[@AlvaroFab28]
 [Villca Araca Jhesica]	Administrador de Sistemas y Base de Datos	[@cero0202]
 
-🎯 I. Objetivo del Proyecto
-Objetivo: Desplegar una infraestructura escalable, resiliente y de alta disponibilidad para MediaWiki, implementando balanceo de carga, replicación de base de datos, almacenamiento compartido, caché distribuido y monitoreo, siguiendo las mejores prácticas de seguridad.
 
-💡 II. Justificación e Importancia
-Justificación: Este proyecto resuelve problemas de continuidad operacional (T1) y seguridad (T5) al eliminar puntos únicos de fallo, distribuir la carga de trabajo, y aplicar hardening en todos los servidores. La implementación de alta disponibilidad (T2) garantiza que el servicio de la wiki esté disponible incluso en caso de fallos de hardware o software. Además, la automatización (T6) y el monitoreo (T4) permiten una gestión eficiente y proactiva de la infraestructura.
+# 🚀 SIS313: Infraestructura High Availability - MediaWiki Cluster
 
-🛠️ III. Tecnologías y Conceptos Implementados
-3.1. Tecnologías Clave
-[Nginx]: Proxy Inverso y Balanceo de Carga con Rate Limiting y SSL/TLS.
-[MariaDB]: Servidor de Base de Datos principal.
-[Keepalived]: Implementación de VRRP para Failover de la IP Virtual (HA).
-[Prometheus/Grafana]: Monitoreo y visualización de métricas de rendimiento/tráfico.
-[Redis]: Caché de objetos y sesiones para acelerar el rendimiento.
-[NFS]: Almacenamiento compartido para archivos de MediaWiki.
-[Dnsmasq]: Servidor DNS local para resolución de nombres en la red interna.
-[Ansible/Bash]: Automatización del despliegue y la configuración de hardening (implícito en guías, aunque no se detalló playbook, se usaron scripts bash).
+![Status](https://img.shields.io/badge/STATUS-TERMINADO-green?style=for-the-badge)
+![Security](https://img.shields.io/badge/SEGURIDAD-PARANOICA-red?style=for-the-badge)
+![Availability](https://img.shields.io/badge/UPTIME-99.9%25-blue?style=for-the-badge)
 
-3.2. Conceptos de la Asignatura Puestos en Práctica (T1 - T6)
-Alta Disponibilidad (T2) y Tolerancia a Fallos: [Se implementó balanceo de carga con Nginx y failover con Keepalived para los proxies, y almacenamiento compartido NFS para que las aplicaciones puedan ser stateless en cuanto a archivos.]
-Seguridad y Hardening (T5): [Se aplicó hardening SSH (cambio de puerto, deshabilitar root), configuración de firewall UFW con reglas específicas, y SSL/TLS con certificados autofirmados y configuraciones seguras en Nginx.]
-Automatización y Gestión (T6): [Se utilizaron scripts bash para la configuración de cada VM, y se documentó un proceso replicable. Además, se implementó monitoreo automatizado con Prometheus.]
-Balanceo de Carga/Proxy (T3/T4): [Nginx como balanceador de carga entre las dos instancias de MediaWiki, con health checks implícitos.]
-Monitoreo (T4/T1): [Prometheus para recolección de métricas y Grafana para visualización, monitoreando todas las VMs.]
-Networking Avanzado (T3): [Configuración de IP estáticas, VLAN (implícito en la red 192.168.0.0/24), y enrutamiento estático para la salida a internet.]
+> **"Lo que no te mata, te hace más resiliente (o te hace saltar el Failover)."**
 
-🌐 IV. Diseño de la Infraestructura y Topología
-4.1. Diseño Esquemático
-VM/Host	Rol	IP Física	IP Virtual (si aplica)	Red Lógica	SO
-ha1-proxy	Proxy / Load Balancer MASTER	192.168.0.11	192.168.0.10 (VIP)	Red 192.168.0.0/24	Ubuntu 24.04
-ha2-proxy	Proxy / Load Balancer BACKUP	192.168.0.12	192.168.0.10 (VIP)	Red 192.168.0.0/24	Ubuntu 24.04
-app1-wiki	Servidor de Aplicación 1	192.168.0.13	N/A	Red 192.168.0.0/24	Ubuntu 24.04
-app2-wiki	Servidor de Aplicación 2	192.168.0.14	N/A	Red 192.168.0.0/24	Ubuntu 24.04
-srv-nfs	Servidor NFS	192.168.0.15	N/A	Red 192.168.0.0/24	Ubuntu 24.04
-srv-redis	Servidor Redis	192.168.0.16	N/A	Red 192.168.0.0/24	Ubuntu 24.04
-srv-db	Servidor MariaDB	192.168.0.17	N/A	Red 192.168.0.0/24	Ubuntu 24.04
-srv-monitor	Servidor Monitor + DNS	192.168.0.20	N/A	Red 192.168.0.0/24	Ubuntu 24.04
+Este repositorio contiene la documentación, scripts y configuraciones para el **Proyecto Final de la asignatura SIS313**. Implementamos una infraestructura de **Alta Disponibilidad** para MediaWiki, diseñada para aguantar caídas de servidores, picos de tráfico y miradas feas del docente.
 
-4.2. Estrategia Adoptada
-Estrategia de Balanceo y Failover: Se optó por un par de proxies con Keepalived en modo MASTER-BACKUP para garantizar la disponibilidad de la IP virtual. Nginx balancea la carga entre las dos aplicaciones de MediaWiki.
-Estrategia de Almacenamiento: Se utilizó NFS para compartir los archivos de MediaWiki (imágenes) entre las dos instancias de la aplicación, garantizando consistencia.
-Estrategia de Caché: Se implementó Redis para almacenar sesiones y caché de objetos, lo que permite una mayor velocidad y persistencia de sesiones incluso si una aplicación falla.
-Estrategia de Monitoreo: Se desplegó Prometheus para recolectar métricas de todas las VMs mediante node-exporter, y Grafana para visualizar los datos en tiempo real.
+---
 
-📋 V. Guía de Implementación y Puesta en Marcha
-5.1. Pre-requisitos
-- 8 VMs con Ubuntu Server 24.04 instalado.
-- Acceso root/sudo a todas las VMs.
-- Conexión de red entre las VMs en la misma subred (192.168.0.0/24).
-- Router físico con puerta de enlace en 192.168.0.1.
+## 👥 El Dream Team
+| Rol | Miembro | GitHub |
+| :--- | :--- | :--- |
+| **Arquitecto de Infraestructura y Seguridad** | [Villena Mamani Alvaro Fabian] | [@AlvaroFab28] |
+| **SysAdmin & Hardening** | [Castro Siñanis Jose Luis] | [@tu_usuario] |
+| **Administrador de Sistemas y Base de Datos** | [Villca Araca Jhesica] | [@cero0202] |
 
-5.2. Despliegue (Pasos generales)
-1. Configurar la red en cada VM mediante Netplan con las IPs estáticas según la tabla.
-2. En la VM srv-db (192.168.0.17): Instalar MariaDB, configurar acceso remoto y crear la base de datos y usuario para MediaWiki.
-3. En la VM srv-nfs (192.168.0.15): Instalar NFS, crear carpeta compartida y exportarla a las IPs de las aplicaciones.
-4. En las VMs app1-wiki (192.168.0.13) y app2-wiki (192.168.0.14): Instalar Nginx, PHP, MediaWiki, montar la carpeta NFS y configurar la aplicación para conectarse a la base de datos.
-5. En las VMs ha1-proxy (192.168.0.11) y ha2-proxy (192.168.0.12): Instalar Nginx y Keepalived, configurar el balanceo de carga y la IP virtual.
-6. En la VM srv-redis (192.168.0.16): Instalar Redis y configurar para aceptar conexiones de las aplicaciones.
-7. En la VM srv-monitor (192.168.0.20): Instalar Dnsmasq, Prometheus, Grafana y node-exporter. Configurar DNS para el dominio wiki.usfx.bo.
-8. Aplicar hardening: Cambiar puerto SSH a 2222, configurar UFW en todas las VMs, y configurar SSL/TLS en los proxies.
+---
 
-5.3. Ficheros de Configuración Clave
-- /etc/netplan/50-cloud-init.yaml: Configuración de red en todas las VMs.
-- /etc/nginx/sites-available/default (en proxies): Configuración del balanceo de carga y SSL.
-- /etc/keepalived/keepalived.conf: Configuración de VRRP para failover.
-- /etc/mysql/mariadb.conf.d/50-server.cnf: Configuración de MariaDB para aceptar conexiones remotas.
-- /etc/exports: Configuración de las exportaciones NFS.
-- /var/www/html/wiki/LocalSettings.php: Configuración de MediaWiki (se copia entre aplicaciones).
-- /etc/redis/redis.conf: Configuración de Redis para aceptar conexiones remotas.
-- /etc/dnsmasq.conf: Configuración del servidor DNS local.
-- /etc/prometheus/prometheus.yml: Configuración de Prometheus para recolectar métricas.
+## 🏗️ Arquitectura de la Bestia
 
-⚠️ VI. Pruebas y Validación
-Prueba Realizada	Resultado Esperado	Resultado Obtenido
-Test de Failover de los Proxies (Apagar ha1-proxy)	La VIP (192.168.0.10) debe migrar a ha2-proxy y el servicio debe seguir activo.	OK
-Prueba de Balanceo de Carga	El tráfico se distribuye entre app1-wiki y app2-wiki.	OK (se verificó con logs de Nginx)
-Test de Sesiones con Redis	Al apagar una app, la sesión del usuario debe persistir en la otra app.	OK
-Test de Almacenamiento NFS	Subir una imagen en app1-wiki y visualizarla en app2-wiki.	OK
-Test de Seguridad (SSL/Firewall)	El acceso HTTP debe redirigir a HTTPS y el firewall debe bloquear puertos no autorizados.	OK
-Test de Monitoreo	Las métricas de todas las VMs deben aparecer en Grafana.	OK
+No es solo instalar un Apache y rezar. Acá desacoplamos todo para que sea **Stateless** y escalable.
 
-📚 VII. Conclusiones y Lecciones Aprendidas
-Se logró implementar una infraestructura de alta disponibilidad para MediaWiki, cumpliendo con los objetivos de resiliencia, seguridad y rendimiento. Se pusieron en práctica conceptos clave de la asignatura, como balanceo de carga, replicación, monitoreo y hardening.
+### 🗺️ Mapa de Red (Topología)
 
-Lecciones aprendidas:
-1. La importancia de la planificación y documentación de la red y los roles de cada VM.
-2. La configuración de NFS requiere atención a los permisos y a las direcciones IP autorizadas.
-3. El uso de una IP virtual con Keepalived es una solución robusta para el failover de los proxies.
-4. Redis mejora significativamente el rendimiento y la experiencia de usuario al mantener las sesiones.
-5. El monitoreo con Prometheus y Grafana permite tener una visión clara del estado de la infraestructura.
+| Hostname | Rol | IP Física | IP Virtual (VIP) | Software Clave |
+| :--- | :--- | :--- | :--- | :--- |
+| **ha1-proxy** | Balanceador MASTER | `192.168.0.11` | **`192.168.0.10`** | Nginx, Keepalived |
+| **ha2-proxy** | Balanceador BACKUP | `192.168.0.12` | `192.168.0.10` | Nginx, Keepalived |
+| **app1-wiki** | Nodo Aplicación 1 | `192.168.0.13` | - | Nginx, PHP-FPM, MediaWiki |
+| **app2-wiki** | Nodo Aplicación 2 | `192.168.0.14` | - | Nginx, PHP-FPM, MediaWiki |
+| **srv-db** | Base de Datos | `192.168.0.17` | - | MariaDB (Hardened) |
+| **srv-redis** | Caché & Sesiones | `192.168.0.16` | - | Redis |
+| **srv-nfs** | Storage Compartido | `192.168.0.15` | - | NFS Kernel Server |
+| **srv-monitor**| Ojo de Sauron | `192.168.0.20` | - | Prometheus, Grafana, DNS |
 
-Qué haríamos diferente:
-- Automatizar la instalación y configuración con Ansible para reducir errores y tiempo de despliegue.
-- Implementar replicación de la base de datos para mayor disponibilidad.
-- Utilizar certificados SSL de una entidad certificadora en lugar de autofirmados para evitar advertencias en los navegadores.
+---
+
+## 🛠️ Tecnologías Implementadas (El Arsenal)
+
+* **Front-End / Balanceo:** **Nginx** manejando SSL/TLS y **Keepalived** (VRRP) para que la IP `.10` flote entre servidores como Messi en el área.
+* **Back-End:** **PHP-FPM** procesando código.
+* **Base de Datos:** **MariaDB** configurada para accesos remotos seguros.
+* **Performance:** **Redis** para que las sesiones no se pierdan y la carga vuele (Caché de Objetos).
+* **Storage:** **NFS** para que las imágenes subidas en la App 1 se vean en la App 2 al toque.
+* **Observabilidad:** **Prometheus + Grafana** para ver gráficos lindos y saber cuándo explota todo.
+
+---
+
+## 🚀 Guía de Despliegue Rápido (Para impacientes)
+
+### Fase 1: Los Cimientos 🧱
+Levantar `srv-db` y `srv-nfs`.
+1.  **DB:** Instalar MariaDB, abrir el `bind-address` a `0.0.0.0` y crear usuario con acceso `%`.
+2.  **NFS:** Exportar carpeta `/var/nfs/wikipics` con permisos para las IPs de las apps.
+
+### Fase 2: Las Aplicaciones ⚙️
+Levantar `app1-wiki`.
+1.  Instalar Stack LEMP.
+2.  Montar el NFS en `/var/www/html/wiki/images`.
+3.  Instalar MediaWiki apuntando a la DB remota.
+4.  **Clonar la VM** para crear `app2-wiki` (Acordate de cambiar la MAC Address o se rompe todo).
+
+### Fase 3: El Portero (High Availability) 🚪
+Configurar `ha1-proxy` y `ha2-proxy`.
+1.  Configurar Nginx como **Upstream** apuntando a `.13` y `.14`.
+2.  Configurar **Keepalived**:
+    * `ha1`: Prioridad 101 (Master).
+    * `ha2`: Prioridad 100 (Backup).
+3.  Apuntar el DNS local `wiki.usfx.bo` a la VIP `192.168.0.10`.
+
+### Fase 4: El Nitro (Redis) 🏎️
+Levantar `srv-redis`.
+1.  En `LocalSettings.php`, configurar `$wgSessionCacheType` usando Redis.
+2.  Ahora podés apagar un servidor y la sesión del usuario sigue viva. Magia pura.
+
+### Fase 5: Seguridad Paranoica (Hardening) 🛡️
+1.  **SSH:** Cambiado al puerto `2222`. Root login deshabilitado.
+2.  **SSL:** Certificados autofirmados. HTTP redirige a HTTPS.
+3.  **Firewall (UFW):** Política *Default Deny*. Solo pasa lo que tiene invitación VIP.
+
+---
+
+## 🧪 Pruebas de Estrés (Rompiendo cosas)
+
+Para verificar que esto no es puro humo, hacé lo siguiente:
+
+1.  **Test de Failover:**
+    * Dejá un `ping 192.168.0.10 -t` corriendo.
+    * Desenchufá el cable de red del **Proxy Master**.
+    * *Resultado:* El ping pierde 1 paquete y sigue. El servicio no cae.
+
+2.  **Test de Balanceo:**
+    * Revisá los logs de Nginx en los nodos App.
+    * *Resultado:* Las peticiones se reparten una para mí, una para vos (Round Robin).
+
+3.  **Test de Seguridad:**
+    * Intentá entrar por SSH puerto 22.
+    * *Resultado:* `Connection Refused`. (A casa, hacker).
+
+---
+
+## 📸 Capturas de Pantalla
+
+*(Acá podés poner screenshots de tu Dashboard de Grafana o del sitio funcionando)*
+
+---
+
+## 📜 Licencia
+
+Este proyecto es código abierto bajo la licencia **"Si lo rompés, lo pagás"**.
+Desarrollado con ❤️, café y estrés en la **USFX**.
